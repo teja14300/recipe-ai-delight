@@ -1,18 +1,21 @@
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, X, Camera, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
 
 interface IngredientInputProps {
   onIngredientsChange: (ingredients: string[]) => void;
 }
 
 const IngredientInput = ({ onIngredientsChange }: IngredientInputProps) => {
+  const { toast } = useToast();
   const [inputValue, setInputValue] = useState("");
   const [ingredients, setIngredients] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const addIngredient = () => {
     if (inputValue.trim()) {
@@ -36,18 +39,53 @@ const IngredientInput = ({ onIngredientsChange }: IngredientInputProps) => {
     }
   };
 
-  const handleImageUpload = () => {
-    // Mock image upload functionality
+  const triggerFileInput = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Check if the file is an image
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Invalid File Type",
+        description: "Please select an image file (JPEG, PNG, etc.)",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Process the image
     setIsUploading(true);
     
-    // Simulate API call delay
+    // Display the file being processed
+    toast({
+      title: "Processing Image",
+      description: `Analyzing ${file.name} to detect ingredients...`,
+    });
+
+    // Simulate API call for ingredient detection
     setTimeout(() => {
-      // Mock detected ingredients
+      // Mock detected ingredients - in a real app, this would be an API call
       const detectedIngredients = ["onion", "tomato", "chicken", "garlic"];
       const newIngredients = [...ingredients, ...detectedIngredients];
       setIngredients(newIngredients);
       onIngredientsChange(newIngredients);
       setIsUploading(false);
+      
+      toast({
+        title: "Ingredients Detected",
+        description: `Found ${detectedIngredients.length} ingredients in your image`,
+      });
+
+      // Reset the file input so the same file can be selected again
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }, 2000);
   };
 
@@ -85,7 +123,7 @@ const IngredientInput = ({ onIngredientsChange }: IngredientInputProps) => {
         <Button
           type="button"
           variant="outline"
-          onClick={handleImageUpload}
+          onClick={triggerFileInput}
           disabled={isUploading}
         >
           {isUploading ? (
@@ -95,6 +133,13 @@ const IngredientInput = ({ onIngredientsChange }: IngredientInputProps) => {
           )}
           {isUploading ? "Detecting..." : "Upload Image"}
         </Button>
+        <input 
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          accept="image/*"
+          className="hidden"
+        />
       </div>
 
       <div className="flex flex-wrap gap-2">
