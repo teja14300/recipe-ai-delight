@@ -103,11 +103,7 @@ const mockRecipes = [
   },
 ];
 
-interface RecipeResultsProps {
-  isLoading?: boolean;
-}
-
-const RecipeResults: React.FC<RecipeResultsProps> = ({ isLoading = false }) => {
+const RecipeResults = ({ isLoading = false }) => {
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center py-12">
