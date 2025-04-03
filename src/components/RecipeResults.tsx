@@ -1,4 +1,5 @@
 
+import React from "react";
 import RecipeCard from "./RecipeCard";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
@@ -106,7 +107,7 @@ interface RecipeResultsProps {
   isLoading?: boolean;
 }
 
-const RecipeResults = ({ isLoading = false }: RecipeResultsProps) => {
+const RecipeResults: React.FC<RecipeResultsProps> = ({ isLoading = false }) => {
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center py-12">
@@ -134,7 +135,7 @@ const RecipeResults = ({ isLoading = false }: RecipeResultsProps) => {
       <Tabs defaultValue="all" className="w-full">
         <TabsList>
           <TabsTrigger value="all">All</TabsTrigger>
-          <TabsTrigger value="quick">Quick (<30 min)</TabsTrigger>
+          <TabsTrigger value="quick">Quick (&lt;30 min)</TabsTrigger>
           <TabsTrigger value="vegetarian">Vegetarian</TabsTrigger>
           <TabsTrigger value="gluten-free">Gluten-Free</TabsTrigger>
         </TabsList>
