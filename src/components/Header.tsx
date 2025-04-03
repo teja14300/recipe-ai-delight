@@ -1,10 +1,23 @@
 
 import { Button } from "@/components/ui/button";
 import ThemeToggle from "./ThemeToggle";
-import { ChefHat } from "lucide-react";
+import { ChefHat, LogOut } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 const Header = () => {
+  const { logout, user } = useAuth();
+  const { toast } = useToast();
+
+  const handleLogout = () => {
+    logout();
+    toast({
+      title: "Logged out",
+      description: "You have been successfully logged out",
+    });
+  };
+
   const scrollToIngredients = () => {
     const ingredientsSection = document.getElementById("ingredients-section");
     if (ingredientsSection) {
@@ -21,6 +34,11 @@ const Header = () => {
         </Link>
         
         <div className="flex items-center gap-4">
+          {user && (
+            <div className="text-sm text-muted-foreground mr-2">
+              Hello, <span className="font-medium">{user.name}</span>
+            </div>
+          )}
           <ThemeToggle />
           <Button 
             variant="default" 
@@ -28,6 +46,14 @@ const Header = () => {
             onClick={scrollToIngredients}
           >
             Get Started
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={handleLogout}
+            title="Logout"
+          >
+            <LogOut className="h-4 w-4" />
           </Button>
         </div>
       </div>
